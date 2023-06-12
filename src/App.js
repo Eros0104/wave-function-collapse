@@ -1,20 +1,31 @@
+import { useMemo } from "react";
 import Grass from "./components/Grass";
 import Water from "./components/Water";
 import Sand from "./components/Sand";
+import Rock from "./components/Rock";
+
 const rows = 64;
 const columns = 64;
 
 const tileTypes = [
   {
+    identifier: "rock",
+    connectsTo: ["rock", "grass"],
+    Component: Rock,
+  },
+  {
     identifier: "grass",
+    connectsTo: ["sand", "grass", "rock"],
     Component: Grass,
   },
   {
     identifier: "sand",
+    connectsTo: ["water", "grass", "sand"],
     Component: Sand,
   },
   {
     identifier: "water",
+    connectsTo: ["sand", "water"],
     Component: Water,
   },
 ];
@@ -36,7 +47,10 @@ const generateTileMap = () => {
   const startY = Math.floor(Math.random() * columns);
 
   const startingTile = getRandomTile();
-  tileMap[startY][startX] = startingTile;
+  tileMap[startY][startX] = {
+    counter: getNumber(),
+    ...startingTile,
+  };
 
   const queue = [{ x: startX, y: startY }];
 
@@ -47,9 +61,16 @@ const generateTileMap = () => {
 
     neighbors.forEach((neighbor) => {
       if (tileMap[neighbor.y][neighbor.x] === null) {
-        const possibleTiles = getCandidateTiles(neighbor.x, neighbor.y);
+        const possibleTiles = getCandidateTiles(
+          neighbor.x,
+          neighbor.y,
+          tileMap
+        );
         const selectedTile = selectTile(possibleTiles);
-        tileMap[neighbor.y][neighbor.x] = selectedTile;
+        tileMap[neighbor.y][neighbor.x] = {
+          counter: getNumber(),
+          ...selectedTile,
+        };
         queue.push(neighbor);
       }
     });
@@ -57,6 +78,14 @@ const generateTileMap = () => {
 
   return tileMap;
 };
+
+function getNumber() {
+  const counter = Number(localStorage.getItem("counter"));
+
+  localStorage.setItem("counter", counter + 1);
+
+  return counter;
+}
 
 function selectTile(candidates) {
   let random = Math.floor(Math.random() * candidates.length);
@@ -72,28 +101,65 @@ function getNeighbors(x, y) {
   return neighbors;
 }
 
-function getCandidateTiles(x, y) {
+function getCandidateTiles(x, y, tileMap) {
   const candidates = [];
   tileTypes.forEach((tile) => {
-    if (tileFits(tile, x, y)) {
+    if (tileFits(tile, x, y, tileMap)) {
       candidates.push(tile);
     }
   });
   return candidates;
 }
 
-function tileFits(tile, x, y) {
+function tileFits(tileType, x, y, tileMap) {
+  // is tile already filled
+  if (tileMap[y][x] !== null) {
+    return false;
+  }
+
+  // get neighbor coordinates
+  const neighbors = getNeighbors(x, y);
+
+  for (const neighbor of neighbors) {
+    const neighborTile = tileMap[neighbor.y][neighbor.x];
+    if (neighborTile !== null) {
+      const isAbleToConnect = neighborTile.connectsTo.includes(
+        tileType.identifier
+      );
+
+      if (!isAbleToConnect) {
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 
 function App() {
-  const tileMap = generateTileMap();
+  localStorage.setItem("counter", 0);
+  const tileMap = useMemo(() => generateTileMap(), []);
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {tileMap.map((row) => (
         <div style={{ display: "flex" }}>
-          {row.map(({ Component }) => (
-            <Component />
+          {row.map(({ Component, counter }) => (
+            <div
+              style={{ position: "relative", width: "64px", height: "64px" }}
+            >
+              {/* <span
+                style={{
+                  color: "white",
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                {counter}
+              </span> */}
+              <Component />
+            </div>
           ))}
         </div>
       ))}

@@ -3,6 +3,7 @@ import Grass from "./components/Grass";
 import Water from "./components/Water";
 import Sand from "./components/Sand";
 import Rock from "./components/Rock";
+import weightedRandom from "./utils/weightedRandom";
 
 const rows = 64;
 const columns = 64;
@@ -10,21 +11,25 @@ const columns = 64;
 const tileTypes = [
   {
     identifier: "rock",
+    density: 1,
     connectsTo: ["rock", "grass"],
     Component: Rock,
   },
   {
     identifier: "grass",
+    density: 5,
     connectsTo: ["sand", "grass", "rock"],
     Component: Grass,
   },
   {
     identifier: "sand",
+    density: 2,
     connectsTo: ["water", "grass", "sand"],
     Component: Sand,
   },
   {
     identifier: "water",
+    density: 8,
     connectsTo: ["sand", "water"],
     Component: Water,
   },
@@ -88,8 +93,11 @@ function getNumber() {
 }
 
 function selectTile(candidates) {
-  let random = Math.floor(Math.random() * candidates.length);
-  return candidates[random];
+  const tilesDensities = candidates.map((candidate) => candidate.density);
+
+  const randomTile = weightedRandom(candidates, tilesDensities);
+
+  return randomTile.item;
 }
 
 function getNeighbors(x, y) {

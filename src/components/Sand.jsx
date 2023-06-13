@@ -1,7 +1,8 @@
 import Tile from "./Tile";
 
-const Sand = () => {
-  return <Tile srcImg="sand-tile.png" />
-}
+const Sand = ({ waterDepth }) => {
+  const depth = waterDepth || 0;
+  return <Tile srcImg={`tiles/Ground/sand/${depth}.png`} />;
+};
 
 export default Sand;

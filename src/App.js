@@ -3,34 +3,54 @@ import Grass from "./components/Grass";
 import Water from "./components/Water";
 import Sand from "./components/Sand";
 import Rock from "./components/Rock";
+import Tree from "./components/Tree";
 import weightedRandom from "./utils/weightedRandom";
 
-const rows = 64;
-const columns = 64;
+const rows = 128;
+const columns = 128;
 
 const tileTypes = [
   {
+    identifier: "tree",
+    density: 3,
+    connectsTo: ["tree", "grass"],
+    Component: Tree,
+  },
+  ,
+  {
     identifier: "rock",
     density: 1,
-    connectsTo: ["rock", "grass"],
+    connectsTo: ["rock", "grass", "tree"],
     Component: Rock,
   },
   {
     identifier: "grass",
-    density: 5,
-    connectsTo: ["sand", "grass", "rock"],
+    density: 6,
+    connectsTo: ["sand", "grass", "rock", "tree"],
     Component: Grass,
   },
   {
     identifier: "sand",
-    density: 2,
-    connectsTo: ["water", "grass", "sand"],
+    density: 3,
+    connectsTo: ["grass", "sand", "sand-1"],
     Component: Sand,
   },
   {
+    identifier: "sand-1",
+    density: 2,
+    connectsTo: ["sand-1", "sand", "sand-2"],
+    Component: () => <Sand waterDepth={1} />,
+  },
+  {
+    identifier: "sand-2",
+    density: 2,
+    connectsTo: ["water", "sand-1", "sand-2"],
+    Component: () => <Sand waterDepth={2} />,
+  },
+  {
     identifier: "water",
-    density: 8,
-    connectsTo: ["sand", "water"],
+    density: 6,
+    connectsTo: ["sand-2", "water"],
     Component: Water,
   },
 ];
@@ -153,7 +173,7 @@ function App() {
         <div style={{ display: "flex" }}>
           {row.map(({ Component, counter }) => (
             <div
-              style={{ position: "relative", width: "64px", height: "64px" }}
+              style={{ position: "relative", width: "16px", height: "16px" }}
             >
               {/* <span
                 style={{

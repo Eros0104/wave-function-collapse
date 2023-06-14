@@ -1,59 +1,11 @@
 import { useMemo } from "react";
-import Grass from "./components/Grass";
-import Water from "./components/Water";
-import Sand from "./components/Sand";
-import Rock from "./components/Rock";
-import Tree from "./components/Tree";
 import weightedRandom from "./utils/weightedRandom";
+import tileTypes from "./config/tileTypes";
+import TileMapCanvas from "./components/Grid";
 
 const rows = 128;
 const columns = 128;
-
-const tileTypes = [
-  {
-    identifier: "tree",
-    density: 3,
-    connectsTo: ["tree", "grass"],
-    Component: Tree,
-  },
-  ,
-  {
-    identifier: "rock",
-    density: 1,
-    connectsTo: ["rock", "grass", "tree"],
-    Component: Rock,
-  },
-  {
-    identifier: "grass",
-    density: 6,
-    connectsTo: ["sand", "grass", "rock", "tree"],
-    Component: Grass,
-  },
-  {
-    identifier: "sand",
-    density: 3,
-    connectsTo: ["grass", "sand", "sand-1"],
-    Component: Sand,
-  },
-  {
-    identifier: "sand-1",
-    density: 2,
-    connectsTo: ["sand-1", "sand", "sand-2"],
-    Component: () => <Sand waterDepth={1} />,
-  },
-  {
-    identifier: "sand-2",
-    density: 2,
-    connectsTo: ["water", "sand-1", "sand-2"],
-    Component: () => <Sand waterDepth={2} />,
-  },
-  {
-    identifier: "water",
-    density: 6,
-    connectsTo: ["sand-2", "water"],
-    Component: Water,
-  },
-];
+const tileSize = 16;
 
 function getRandomTile() {
   return tileTypes[Math.floor(Math.random() * tileTypes.length)];
@@ -167,6 +119,8 @@ function tileFits(tileType, x, y, tileMap) {
 function App() {
   localStorage.setItem("counter", 0);
   const tileMap = useMemo(() => generateTileMap(), []);
+  return <TileMapCanvas tileSize={tileSize} mapData={tileMap} />;
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {tileMap.map((row) => (

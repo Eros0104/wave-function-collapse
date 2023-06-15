@@ -3,8 +3,8 @@ import weightedRandom from "./utils/weightedRandom";
 import tileTypes from "./config/tileTypes";
 import TileMapCanvas from "./components/Grid";
 
-const rows = 128;
-const columns = 128;
+const rows = 64;
+const columns = 64;
 const tileSize = 16;
 
 function getRandomTile() {
@@ -120,33 +120,6 @@ function App() {
   localStorage.setItem("counter", 0);
   const tileMap = useMemo(() => generateTileMap(), []);
   return <TileMapCanvas tileSize={tileSize} mapData={tileMap} />;
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      {tileMap.map((row) => (
-        <div style={{ display: "flex" }}>
-          {row.map(({ Component, counter }) => (
-            <div
-              style={{ position: "relative", width: "16px", height: "16px" }}
-            >
-              {/* <span
-                style={{
-                  color: "white",
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                }}
-              >
-                {counter}
-              </span> */}
-              <Component />
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export default App;

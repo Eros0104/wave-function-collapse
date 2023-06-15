@@ -27,7 +27,7 @@ const tilesConfig = [
   {
     identifier: "sand-1",
     density: 3,
-    connectsTo: ["sand-1", "sand"],
+    connectsTo: ["sand-1", "sand", "water"],
     Component: `tiles/Ground/sand/${1}.png`,
   },    
   {

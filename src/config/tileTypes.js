@@ -27,19 +27,13 @@ const tilesConfig = [
   {
     identifier: "sand-1",
     density: 3,
-    connectsTo: ["sand-1", "sand", "sand-2"],
+    connectsTo: ["sand-1", "sand"],
     Component: `tiles/Ground/sand/${1}.png`,
-  },
-  {
-    identifier: "sand-2",
-    density: 3,
-    connectsTo: ["water", "sand-1", "sand-2"],
-    Component: `tiles/Ground/sand/${2}.png`,
-  },
+  },    
   {
     identifier: "water",
     density: 6,
-    connectsTo: ["sand-2", "water"],
+    connectsTo: ["sand-1", "water"],
     Component: "water-tile.gif",
   },
 ];
